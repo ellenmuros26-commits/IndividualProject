@@ -1,0 +1,73 @@
+{{> payroll-head}}
+<body class="pf-body">
+  <div class="pf-shell">
+    {{> payroll-sidebar-rates}}
+    <main class="pf-main">
+      <header class="pf-page-heading">
+        <div>
+          <h1>Worker Pay Rates</h1>
+          <p class="pf-subtitle">Manage worker compensation rates and effective dates.</p>
+        </div>
+        <a href="/payroll-finance/pay-rates/new" class="pf-btn pf-hi">Add Pay Rate</a>
+      </header>
+
+      <div class="pf-flashes" aria-live="polite">
+        {{#if success}}
+          <div class="pf-flash">{{success}}</div>
+        {{/if}}
+        {{#if error}}
+          <div class="pf-flash">{{error}}</div>
+        {{/if}}
+      </div>
+
+      <form method="GET" action="/payroll-finance/pay-rates" class="pf-card pf-filter-form">
+        <label>
+          Filter by worker
+          <select name="worker_id" aria-label="Filter by worker">
+            <option value="">All workers</option>
+            {{#each workers}}
+              <option value="{{id}}" {{#if selected}}selected{{/if}}>{{worker_code}} - {{first_name}} {{last_name}}</option>
+            {{/each}}
+          </select>
+        </label>
+        <button type="submit" class="pf-btn">Filter</button>
+        <a href="/payroll-finance/pay-rates" class="pf-btn pf-alt">Clear</a>
+      </form>
+
+      <section class="pf-card pf-scroll">
+        <table class="pf-table">
+          <thead>
+            <tr>
+              <th>Worker</th>
+              <th>Pay Type</th>
+              <th>Rate</th>
+              <th>Effective</th>
+              <th>End Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each rates}}
+              <tr>
+                <td>{{worker.first_name}} {{worker.middle_name}} {{worker.last_name}} <span class="pf-mute">({{worker.worker_code}})</span></td>
+                <td>{{pay_type}}</td>
+                <td class="pf-number">{{pay_rate}}</td>
+                <td>{{effective_date}}</td>
+                <td>{{#if end_date}}{{end_date}}{{else}}<span class="pf-tag pf-open">Open</span>{{/if}}</td>
+                <td>
+                  <div class="pf-actions">
+                    <a href="/payroll-finance/pay-rates/{{id}}/edit" class="pf-btn pf-alt">Edit</a>
+                    <form method="POST" action="/payroll-finance/pay-rates/{{id}}/delete" onsubmit="return confirm('Delete this pay rate?')">
+                      <button type="submit" class="pf-btn pf-alt pf-danger">Delete</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {{else}}
+              <tr><td colspan="6" class="pf-empty">No pay rates found.</td></tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </section>
+    </main>
+    {{> payroll-footer}}

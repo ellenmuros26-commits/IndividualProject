@@ -1,0 +1,9 @@
+<aside class="pf-sidebar">
+  <div class="pf-logo"><i class="pf-logo-mark" aria-hidden="true"></i>BUILDORA</div>
+  <nav class="pf-sidebar-links" aria-label="Payroll and Finance">
+    <a href="/payroll-finance/pay-rates" class="pf-sidebar-link" aria-current="page">Pay Rates</a>
+    <a href="/payroll-finance/periods" class="pf-sidebar-link">Payroll Periods</a>
+    <a href="/payroll-finance/payroll" class="pf-sidebar-link">Payroll</a>
+  </nav>
+</aside>
+<div class="pf-content">

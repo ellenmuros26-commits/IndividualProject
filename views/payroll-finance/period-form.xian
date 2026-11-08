@@ -1,0 +1,42 @@
+{{> payroll-head}}
+<body class="pf-body">
+  <div class="pf-shell">
+    {{> payroll-sidebar-periods}}
+    <main class="pf-main">
+      <a href="/payroll-finance/periods" class="pf-back">← Payroll Periods</a>
+      <h1>{{title}}</h1>
+      <p class="pf-subtitle">Define the payroll period dates and payment date.</p>
+
+      <div class="pf-flashes" aria-live="polite">
+        {{#if error}}
+          <div class="pf-flash">{{error}}</div>
+        {{/if}}
+      </div>
+
+      <form method="POST" action="{{#if period}}/payroll-finance/periods/{{period.id}}/edit{{else}}/payroll-finance/periods{{/if}}" class="pf-card pf-form-grid">
+        <label class="pf-span">
+          Period Name
+          <input type="text" name="period_name" required maxlength="255" value="{{values.period_name}}">
+        </label>
+
+        <label>
+          Start Date
+          <input type="date" name="start_date" required value="{{values.start_date}}">
+        </label>
+        <label>
+          End Date
+          <input type="date" name="end_date" required value="{{values.end_date}}">
+        </label>
+
+        <label class="pf-span">
+          Payment Date
+          <input type="date" name="payment_date" value="{{values.payment_date}}">
+        </label>
+
+        <div class="pf-row pf-span">
+          <button type="submit" class="pf-btn pf-hi">Save Period</button>
+          <a href="/payroll-finance/periods" class="pf-btn pf-alt">Cancel</a>
+        </div>
+      </form>
+    </main>
+    {{> payroll-footer}}

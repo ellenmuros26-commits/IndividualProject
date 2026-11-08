@@ -1,0 +1,73 @@
+{{> payroll-head}}
+<body class="pf-body">
+  <div class="pf-shell">
+    {{> payroll-sidebar-periods}}
+    <main class="pf-main">
+      <header class="pf-page-heading">
+        <div>
+          <h1>Payroll Periods</h1>
+          <p class="pf-subtitle">Manage payroll date ranges and processing status.</p>
+        </div>
+        <a href="/payroll-finance/periods/new" class="pf-btn pf-hi">Add Period</a>
+      </header>
+
+      <div class="pf-flashes" aria-live="polite">
+        {{#if success}}
+          <div class="pf-flash">{{success}}</div>
+        {{/if}}
+        {{#if error}}
+          <div class="pf-flash">{{error}}</div>
+        {{/if}}
+      </div>
+
+      <section class="pf-card pf-scroll">
+        <table class="pf-table">
+          <thead>
+            <tr>
+              <th>Period</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Payment Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each periods}}
+              <tr>
+                <td><strong>{{period_name}}</strong></td>
+                <td>{{start_date}}</td>
+                <td>{{end_date}}</td>
+                <td>{{#if payment_date}}{{payment_date}}{{else}}—{{/if}}</td>
+                <td><span class="pf-tag {{period_status}}">{{period_status}}</span></td>
+                <td>
+                  <div class="pf-actions">
+                    {{#if is_open}}
+                      <a href="/payroll-finance/periods/{{id}}/edit" class="pf-btn pf-alt">Edit</a>
+                      <form method="POST" action="/payroll-finance/periods/{{id}}/delete" onsubmit="return confirm('Delete this payroll period?')">
+                        <button type="submit" class="pf-btn pf-alt pf-danger">Delete</button>
+                      </form>
+                    {{/if}}
+                    {{#if can_generate}}
+                      <a href="/payroll-finance/payroll?period_id={{id}}" class="pf-btn pf-alt">View Payroll</a>
+                      <form method="POST" action="/payroll-finance/periods/{{id}}/generate" onsubmit="return confirm('Generate or recalculate Draft payroll records for this period?')">
+                        <button type="submit" class="pf-btn pf-hi">Generate Payroll</button>
+                      </form>
+                    {{/if}}
+                    {{#if next_status}}
+                      <form method="POST" action="/payroll-finance/periods/{{id}}/status">
+                        <input type="hidden" name="status" value="{{next_status}}">
+                        <button type="submit" class="pf-btn pf-alt">Advance to {{next_status}}</button>
+                      </form>
+                    {{/if}}
+                  </div>
+                </td>
+              </tr>
+            {{else}}
+              <tr><td colspan="6" class="pf-empty">No payroll periods found.</td></tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </section>
+    </main>
+    {{> payroll-footer}}

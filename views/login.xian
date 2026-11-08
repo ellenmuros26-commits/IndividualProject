@@ -1,0 +1,42 @@
+{{> head}}
+<body class="bg-gray-50">
+  <div class="flex justify-center mt-10">
+    <form id="login-form" class="flex flex-col w-96 p-6 border rounded-lg shadow">
+      <h2 class="text-xl font-bold mb-4 text-center">Login</h2>
+      <p id="login-error" class="hidden mb-2 rounded bg-red-50 p-2 text-sm text-red-700" role="alert"></p>
+      <input type="email" name="email" placeholder="Email" class="mb-2 p-2 border rounded" required />
+      <input type="password" name="password" placeholder="Password" class="mb-2 p-2 border rounded" required />
+      <button type="submit" class="bg-blue-500 text-white p-2 rounded">Login</button>
+      <a href="/register" class="text-blue-700 mt-2 text-center">Don't have an account? Register</a>
+      <a href="/forgot-password" class="text-blue-700 mt-2 text-center">Forgot password?</a>
+    </form>
+  </div>
+  <script>
+    document.getElementById("login-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const errorElement = document.getElementById("login-error");
+      errorElement.classList.add("hidden");
+
+      try {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(Object.fromEntries(new FormData(form)))
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+          errorElement.textContent = result.message || "Login failed.";
+          errorElement.classList.remove("hidden");
+          return;
+        }
+
+        window.location.assign("/dashboard");
+      } catch {
+        errorElement.textContent = "Unable to log in. Please try again.";
+        errorElement.classList.remove("hidden");
+      }
+    });
+  </script>
+{{> footer }}

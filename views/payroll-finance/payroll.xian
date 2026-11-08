@@ -1,0 +1,83 @@
+{{> payroll-head}}
+<body class="pf-body">
+  <div class="pf-shell">
+    {{> payroll-sidebar-payroll}}
+    <main class="pf-main">
+      <header class="pf-page-heading">
+        <div>
+          <h1>Payroll Records</h1>
+          <p class="pf-subtitle">View generated payroll by period.</p>
+        </div>
+      </header>
+
+      <div class="pf-flashes" aria-live="polite">
+        {{#if success}}
+          <div class="pf-flash">{{success}}</div>
+        {{/if}}
+        {{#if skipped}}
+          <div class="pf-flash">Skipped workers with no matching pay rate: {{skipped}}</div>
+        {{/if}}
+        {{#if error}}
+          <div class="pf-flash">{{error}}</div>
+        {{/if}}
+      </div>
+
+      <section class="pf-card">
+        <h2>
+          <span>Payroll period</span>
+          <a href="/payroll-finance/periods" class="pf-btn pf-hi">Generate Payroll</a>
+        </h2>
+        <form method="GET" action="/payroll-finance/payroll" class="pf-filter-form">
+          <label>
+            Payroll period
+            <select name="period_id" aria-label="Payroll period" required>
+              <option value="">Select a period</option>
+              {{#each periods}}
+                <option value="{{id}}" {{#if selected}}selected{{/if}}>{{period_name}} ({{start_date}} to {{end_date}})</option>
+              {{/each}}
+            </select>
+          </label>
+          <button type="submit" class="pf-btn">View Records</button>
+        </form>
+      </section>
+
+      <section class="pf-card pf-scroll">
+        <table class="pf-table">
+          <thead>
+            <tr>
+              <th>Worker</th>
+              <th class="pf-number">Hours</th>
+              <th class="pf-number">Days</th>
+              <th class="pf-number">Basic Pay</th>
+              <th class="pf-number">Overtime</th>
+              <th class="pf-number">Allowances</th>
+              <th class="pf-number">Deductions</th>
+              <th class="pf-number">Gross</th>
+              <th class="pf-number">Net</th>
+              <th>Status</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each records}}
+              <tr>
+                <td>{{worker.first_name}} {{worker.middle_name}} {{worker.last_name}} <span class="pf-mute">({{worker.worker_code}})</span></td>
+                <td class="pf-number">{{total_work_hours}}</td>
+                <td class="pf-number">{{total_work_days}}</td>
+                <td class="pf-number">{{basic_pay}}</td>
+                <td class="pf-number">{{overtime_pay}}</td>
+                <td class="pf-number">{{allowances}}</td>
+                <td class="pf-number">{{total_deductions}}</td>
+                <td class="pf-number">{{gross_pay}}</td>
+                <td class="pf-number"><strong>{{net_pay}}</strong></td>
+                <td><span class="pf-tag {{payroll_status}}">{{payroll_status}}</span></td>
+                <td><a href="/payroll-finance/payroll/{{id}}" class="pf-btn pf-alt">Details</a></td>
+              </tr>
+            {{else}}
+              <tr><td colspan="11" class="pf-empty">{{#if selectedPeriodId}}No payroll records found for this period.{{else}}Select a payroll period to view its records.{{/if}}</td></tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </section>
+    </main>
+    {{> payroll-footer}}

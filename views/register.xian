@@ -1,0 +1,42 @@
+{{> head}}
+<body class="bg-gray-50">
+  <div class="flex justify-center mt-10">
+    <form id="register-form" class="flex flex-col w-96 p-6 border rounded-lg shadow">
+      <h2 class="text-xl font-bold mb-4 text-center">Register</h2>
+      <p id="register-error" class="hidden mb-2 rounded bg-red-50 p-2 text-sm text-red-700" role="alert"></p>
+      <input type="text" name="name" placeholder="Name" class="mb-2 p-2 border rounded" required />
+      <input type="email" name="email" placeholder="Email" class="mb-2 p-2 border rounded" required />
+      <input type="password" name="password" placeholder="Password" minlength="8" class="mb-2 p-2 border rounded" required />
+      <button type="submit" class="bg-green-500 text-white p-2 rounded">Register</button>
+      <a href="/login" class="text-blue-700 mt-2 text-center">Already have an account? Login</a>
+    </form>
+  </div>
+  <script>
+    document.getElementById("register-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const errorElement = document.getElementById("register-error");
+      errorElement.classList.add("hidden");
+
+      try {
+        const response = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(Object.fromEntries(new FormData(form)))
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+          errorElement.textContent = result.message || "Registration failed.";
+          errorElement.classList.remove("hidden");
+          return;
+        }
+
+        window.location.assign("/login");
+      } catch {
+        errorElement.textContent = "Unable to register. Please try again.";
+        errorElement.classList.remove("hidden");
+      }
+    });
+  </script>
+{{> footer }}

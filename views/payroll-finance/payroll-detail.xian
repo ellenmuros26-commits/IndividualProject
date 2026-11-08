@@ -1,0 +1,125 @@
+{{> payroll-head}}
+<body class="pf-body">
+  <div class="pf-shell">
+    {{> payroll-sidebar-payroll}}
+    <main class="pf-main">
+      <a href="/payroll-finance/payroll?period_id={{record.payroll_period_id}}" class="pf-back">← Payroll Records</a>
+      <h1>Payroll Record Details</h1>
+      <p class="pf-subtitle">{{record.worker.first_name}} {{record.worker.middle_name}} {{record.worker.last_name}} ({{record.worker.worker_code}})</p>
+
+      <div class="pf-flashes" aria-live="polite">
+        {{#if success}}
+          <div class="pf-flash">{{success}}</div>
+        {{/if}}
+        {{#if error}}
+          <div class="pf-flash">{{error}}</div>
+        {{/if}}
+      </div>
+
+      <section class="pf-card">
+        <h2>Payroll Breakdown <span class="pf-tag {{record.payroll_status}}">{{record.payroll_status}}</span></h2>
+        <div class="pf-detail-grid">
+          <div><p class="pf-mute">Period</p><p class="pf-detail-value">{{record.payrollPeriod.period_name}}</p></div>
+          <div><p class="pf-mute">Period Dates</p><p class="pf-detail-value">{{record.payrollPeriod.start_date}} to {{record.payrollPeriod.end_date}}</p></div>
+          <div><p class="pf-mute">Pay Rate</p><p class="pf-detail-value">{{record.payRate.pay_type}} — {{record.payRate.pay_rate}}</p></div>
+          <div><p class="pf-mute">Work Hours</p><p class="pf-detail-value">{{record.total_work_hours}}</p></div>
+          <div><p class="pf-mute">Work Days</p><p class="pf-detail-value">{{record.total_work_days}}</p></div>
+          <div><p class="pf-mute">Basic Pay</p><p class="pf-detail-value">{{record.basic_pay}}</p></div>
+          <div><p class="pf-mute">Overtime Pay</p><p class="pf-detail-value">{{record.overtime_pay}}</p></div>
+          <div><p class="pf-mute">Allowances</p><p class="pf-detail-value">{{record.allowances}}</p></div>
+          <div><p class="pf-mute">Total Deductions</p><p class="pf-detail-value">{{record.total_deductions}}</p></div>
+          <div><p class="pf-mute">Gross Pay</p><p class="pf-detail-value">{{record.gross_pay}}</p></div>
+          <div><p class="pf-mute">Net Pay</p><p class="pf-detail-value">{{record.net_pay}}</p></div>
+        </div>
+        {{#if record.remarks}}
+          <div class="pf-remarks"><p class="pf-mute">Remarks</p><p>{{record.remarks}}</p></div>
+        {{/if}}
+      </section>
+
+      {{#if isDraft}}
+        <form method="POST" action="/payroll-finance/payroll/{{record.id}}" class="pf-card pf-form-grid">
+          <h2 class="pf-span">Edit Allowances and Remarks</h2>
+          <label>
+            Allowances
+            <input type="number" name="allowances" min="0" step="0.01" required value="{{record.allowances}}">
+          </label>
+          <label>
+            Remarks
+            <textarea name="remarks" rows="4" maxlength="5000">{{record.remarks}}</textarea>
+          </label>
+          <div class="pf-row pf-span"><button type="submit" class="pf-btn pf-hi">Save Changes</button></div>
+        </form>
+      {{/if}}
+
+      <section class="pf-card pf-scroll">
+        <h2>Payroll Items</h2>
+        <table class="pf-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Item</th>
+              <th class="pf-number">Amount</th>
+              <th>Description</th>
+              {{#if isDraft}}<th>Actions</th>{{/if}}
+            </tr>
+          </thead>
+          <tbody>
+            {{#each record.items}}
+              <tr>
+                <td colspan="{{#if ../isDraft}}5{{else}}4{{/if}}" class="pf-item-cell">
+                  {{#if ../isDraft}}
+                    <form id="item-form-{{id}}" method="POST" action="/payroll-finance/payroll/{{../record.id}}/items/{{id}}/edit" class="pf-item-form">
+                      <select name="item_type" aria-label="Payroll item type" required>
+                        {{#each typeOptions}}<option value="{{name}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}
+                      </select>
+                      <input type="text" name="item_name" aria-label="Payroll item name" maxlength="255" required value="{{item_name}}">
+                      <input type="number" name="amount" aria-label="Payroll item amount" min="0.01" step="0.01" required value="{{amount}}">
+                      <input type="text" name="description" aria-label="Payroll item description" maxlength="5000" value="{{description}}">
+                      <div class="pf-actions">
+                        <button type="submit" class="pf-btn pf-alt">Save</button>
+                        <button type="submit" form="delete-item-{{id}}" class="pf-btn pf-alt pf-danger">Delete</button>
+                      </div>
+                    </form>
+                    <form id="delete-item-{{id}}" method="POST" action="/payroll-finance/payroll/{{../record.id}}/items/{{id}}/delete" onsubmit="return confirm('Delete this payroll item?')"></form>
+                  {{else}}
+                    <div class="pf-item-readonly">
+                      <span>{{item_type}}</span><span>{{item_name}}</span><span>{{amount}}</span><span>{{description}}</span>
+                    </div>
+                  {{/if}}
+                </td>
+              </tr>
+            {{else}}
+              <tr><td colspan="{{#if isDraft}}5{{else}}4{{/if}}" class="pf-empty">No payroll items.</td></tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </section>
+
+      {{#if isDraft}}
+        <form method="POST" action="/payroll-finance/payroll/{{record.id}}/items" class="pf-card pf-form-grid">
+          <h2 class="pf-span">Add Payroll Item</h2>
+          <label>
+            Type
+            <select name="item_type" aria-label="Payroll item type" required>
+              <option value="">Select type</option>
+              <option value="Earning">Earning</option>
+              <option value="Deduction">Deduction</option>
+            </select>
+          </label>
+          <label>
+            Item Name
+            <input type="text" name="item_name" maxlength="255" required placeholder="SSS, bonus, cash advance">
+          </label>
+          <label>
+            Amount
+            <input type="number" name="amount" min="0.01" step="0.01" required>
+          </label>
+          <label>
+            Description
+            <input type="text" name="description" maxlength="5000">
+          </label>
+          <div class="pf-row pf-span"><button type="submit" class="pf-btn pf-hi">Add Item</button></div>
+        </form>
+      {{/if}}
+    </main>
+    {{> payroll-footer}}

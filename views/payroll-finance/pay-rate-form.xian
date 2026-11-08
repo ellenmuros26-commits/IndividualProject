@@ -1,0 +1,57 @@
+{{> payroll-head}}
+<body class="pf-body">
+  <div class="pf-shell">
+    {{> payroll-sidebar-rates}}
+    <main class="pf-main">
+      <a href="/payroll-finance/pay-rates" class="pf-back">← Pay Rates</a>
+      <h1>{{title}}</h1>
+      <p class="pf-subtitle">Set the worker's pay type, rate, and effective dates.</p>
+
+      <div class="pf-flashes" aria-live="polite">
+        {{#if error}}
+          <div class="pf-flash">{{error}}</div>
+        {{/if}}
+      </div>
+
+      <form method="POST" action="{{#if rate}}/payroll-finance/pay-rates/{{rate.id}}/edit{{else}}/payroll-finance/pay-rates{{/if}}" class="pf-card pf-form-grid">
+        <label class="pf-span">
+          Worker
+          <select name="worker_id" aria-label="Worker" required>
+            <option value="">Select a worker</option>
+            {{#each workers}}
+              <option value="{{id}}" {{#if selected}}selected{{/if}}>{{worker_code}} - {{first_name}} {{last_name}}</option>
+            {{/each}}
+          </select>
+        </label>
+
+        <label>
+          Pay Type
+          <select name="pay_type" aria-label="Pay type" required>
+            <option value="">Select a pay type</option>
+            {{#each payTypes}}
+              <option value="{{name}}" {{#if selected}}selected{{/if}}>{{name}}</option>
+            {{/each}}
+          </select>
+        </label>
+
+        <label>
+          Pay Rate
+          <input type="number" name="pay_rate" min="0.01" step="0.01" required value="{{values.pay_rate}}">
+        </label>
+
+        <label>
+          Effective Date
+          <input type="date" name="effective_date" required value="{{values.effective_date}}">
+        </label>
+        <label>
+          End Date
+          <input type="date" name="end_date" value="{{values.end_date}}">
+        </label>
+
+        <div class="pf-row pf-span">
+          <button type="submit" class="pf-btn pf-hi">Save Pay Rate</button>
+          <a href="/payroll-finance/pay-rates" class="pf-btn pf-alt">Cancel</a>
+        </div>
+      </form>
+    </main>
+    {{> payroll-footer}}

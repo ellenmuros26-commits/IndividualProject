@@ -1,0 +1,7 @@
+<nav class="bg-white border-b border-gray-200">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center gap-4">
+    <a href="/payroll-finance/pay-rates" class="font-medium text-blue-700 hover:text-blue-900">Pay Rates</a>
+    <a href="/payroll-finance/periods" class="font-medium text-blue-700 hover:text-blue-900">Payroll Periods</a>
+    <a href="/payroll-finance/payroll" class="font-medium text-blue-700 hover:text-blue-900">Payroll</a>
+  </div>
+</nav>
